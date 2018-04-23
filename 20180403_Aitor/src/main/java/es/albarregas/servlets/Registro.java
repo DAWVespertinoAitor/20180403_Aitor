@@ -26,41 +26,55 @@ import javax.servlet.http.HttpServletResponse;
 public class Registro extends HttpServlet {
 
     char[] letras = {'T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E'};
-    String[] meses = {"Enero","Feberero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
-    String[] mesesIngles = {"JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"};
+    String[] meses = {"Enero", "Feberero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
+    String[] mesesIngles = {"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             int todoCorrecto = 0;
+            int contador = 0;
+            String sexo = "";
+            String fecha = "";
+            String tipoDocu = " ";
+            boolean nombrePer = false;
+            boolean usuario = false;
+            boolean contraseña = false;
             boolean fechaNaci = false;
             boolean documentacion = false;
-            String tipoDocu = " ";
             boolean telefMovil = false;
             boolean pref1 = false;
             boolean pref2 = false;
             boolean pref3 = false;
             boolean pref4 = false;
-            String sexo = "";
-            String fecha = "";
-            int contador = 0;
-            
-            
-            
+
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
+            out.println("<title>Registro</title>");
             out.println("<meta charset=\"UTF-8\"/>");
             out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + request.getContextPath() + "/CSS/estilos.css\" media=\"screen\" />");
             out.println("</head>");
             out.println("<body>");
-            
-
-            
 
             Map<String, String[]> parametros = request.getParameterMap();
             System.out.println(parametros.keySet());
+            if (request.getParameter("Nombre") != null && request.getParameter("Nombre") != "") {
+                System.out.println("entro en el nombre");
+                nombrePer = true;
+                todoCorrecto = todoCorrecto + 1;
+            }
+            if (request.getParameter("Usuario") != null && request.getParameter("Usuario") != "") {
+                usuario = true;
+                todoCorrecto = todoCorrecto + 1;
+            }
+            if (request.getParameter("Contrasenia") != null) {
+                System.out.println("Entro a la contraseña");
+                contraseña = true;
+                todoCorrecto = todoCorrecto + 1;
+            }
+
             for (Iterator<String> i = parametros.keySet().iterator(); i.hasNext();) {
                 System.out.println("Vuelta " + contador);
                 contador = contador + 1;
@@ -71,7 +85,7 @@ public class Registro extends HttpServlet {
                     System.out.println("Llego hasta el switch");
                     switch (nombre) {
                         case "Sexo":
-                             sexo = request.getParameter("Sexo");
+                            sexo = request.getParameter("Sexo");
 //                            System.out.println("Llego hasta el sexo");
 //                            if (sexoChecked == "Hombre") {
 //                                sexo = "Mujer";
@@ -90,11 +104,11 @@ public class Registro extends HttpServlet {
 
                                 if (fechaNac.compareTo(ahora) < 0) {
                                     String mes = String.valueOf(fechaNac.getMonth());
-                                    for(int j = 0;j<mesesIngles.length;j++){
-                                        if(mesesIngles[j].equals(mes)){
-                                            fecha = fecha.substring(0,2)+" de "+meses[j] + " de "+fecha.substring(6,10);
+                                    for (int j = 0; j < mesesIngles.length; j++) {
+                                        if (mesesIngles[j].equals(mes)) {
+                                            fecha = fecha.substring(0, 2) + " de " + meses[j] + " de " + fecha.substring(6, 10);
                                         }
-                                        
+
                                     }
                                     todoCorrecto = todoCorrecto + 1;
                                     fechaNaci = true;
@@ -143,7 +157,7 @@ public class Registro extends HttpServlet {
                             String[] preferencias = request.getParameterValues("Preferencia");
                             if (nombre != null) {
                                 for (int j = 0; j < preferencias.length; j++) {
-                                    switch(j){
+                                    switch (j) {
                                         case 0:
                                             pref1 = true;
                                             break;
@@ -163,8 +177,8 @@ public class Registro extends HttpServlet {
                     }
                 }
             }
-
-            if (todoCorrecto == 3) {
+            System.out.println("EL VALOR DE LOS CAMPOS CORRECTOS" + todoCorrecto);
+            if (todoCorrecto == 6) {
                 out.println("<div class=\"columnasCentradas\">");
                 for (Iterator<String> i = parametros.keySet().iterator(); i.hasNext();) {
                     String nombre = i.next();
@@ -176,7 +190,7 @@ public class Registro extends HttpServlet {
                                     out.println((j + 1) + "º " + nombre + " - <strong>" + preferencias[j] + "</strong><br/>");
                                 }
                             }
-                        } else if(nombre.equals("fechaN")){
+                        } else if (nombre.equals("fechaN")) {
                             out.println(nombre + " - <strong>" + fecha + "</strong><br/>");
                         } else {
                             out.println(nombre + " - <strong>" + request.getParameter(nombre) + "</strong><br/>");
@@ -196,9 +210,19 @@ public class Registro extends HttpServlet {
                         + "<td><h3>Datos Personales</h3></td>\n"
                         + "</tr>");
                 out.print("<tr>\n"
-                        + "<td><label for=\"Nombre\">Nombre:</label></td>\n"
-                        + "<td><input type=\"text\" id=\"Nombre\" name=\"Nombre\" value='" + request.getParameter("Nombre") + "' required></td>\n"
+                        + "<td><p>Los campos con el simbolo \"*\" son requeridos</p></td>\n"
                         + "</tr>");
+                if (nombrePer) {
+                    out.print("<tr>\n"
+                            + "<td><label for=\"Nombre\">*Nombre:</label></td>\n"
+                            + "<td><input type=\"text\" id=\"Nombre\" name=\"Nombre\" value='" + request.getParameter("Nombre") + "' required></td>\n"
+                            + "</tr>");
+                } else {
+                    out.print("<tr>\n"
+                            + "<td><label for=\"Nombre\">*Nombre:</label></td>\n"
+                            + "<td><input type=\"text\" id=\"Nombre\" name=\"Nombre\" style=\"border: 1px solid red;\"></td>\n"
+                            + "</tr>");
+                }
                 out.print("<tr>\n"
                         + "<td><label for=\"Apellidos\">Apellidos </label></td>\n"
                         + "<td><input type=\"text\" id=\"Apellidos\" name=\"Apellidos\" value='" + request.getParameter("Apellidos") + "'></td>\n"
@@ -281,14 +305,29 @@ public class Registro extends HttpServlet {
                 out.print("<tr>\n"
                         + "<td><h3>Datos del Usuario</h3></td>\n"
                         + "</tr>");
-                out.print("<tr>\n"
-                        + "<td><label for=\"Usuario\">Usuario:</label></td>\n"
-                        + "<td><input type=\"text\" id=\"Usuario\" name=\"Usuario\" value='" + request.getParameter("Usuario") + "' required></td>\n"
-                        + "</tr>");
-                out.print("<tr>\n"
-                        + "<td><label for=\"Contraseña\">Contraseña:</label></td>\n"
-                        + "<td><input type=\"password\" id=\"Contraseña\" name=\"Contraseña\" value='" + request.getParameter("Contraseña") + "' required></td>\n"
-                        + "</tr>");
+                if (usuario) {
+                    out.print("<tr>\n"
+                            + "<td><label for=\"Usuario\">*Usuario:</label></td>\n"
+                            + "<td><input type=\"text\" id=\"Usuario\" name=\"Usuario\" value='" + request.getParameter("Usuario") + "' required></td>\n"
+                            + "</tr>");
+                } else {
+                    out.print("<tr>\n"
+                            + "<td><label for=\"Usuario\">*Usuario:</label></td>\n"
+                            + "<td><input type=\"text\" id=\"Usuario\" name=\"Usuario\" style=\"border: 1px solid red;\"></td>\n"
+                            + "</tr>");
+                }
+                if (contraseña) {
+                    out.print("<tr>\n"
+                            + "<td><label for=\"Contrasenia\">*Contraseña:</label></td>\n"
+                            + "<td><input type=\"password\" id=\"Contrasenia\" name=\"Contrasenia\" value='" + request.getParameter("Contrasenia") + "' required></td>\n"
+                            + "</tr>");
+                } else {
+                    out.print("<tr>\n"
+                            + "<td><label for=\"Contrasenia\">*Contraseña:</label></td>\n"
+                            + "<td><input type=\"password\" id=\"Contrasenia\" name=\"Contrasenia\" style=\"border: 1px solid red;\"></td>\n"
+                            + "</tr>");
+                }
+
                 if (telefMovil) {
                     out.print("<tr>\n"
                             + "<td><label for=\"Telefono\">Teléfono o movil: </label></td>\n"
