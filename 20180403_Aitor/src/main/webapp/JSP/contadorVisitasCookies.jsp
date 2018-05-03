@@ -24,7 +24,6 @@
         -->
         <div class="columnasCentradas">
             <%
-
                 Cookie[] cookies = request.getCookies();
                 Cookie miContador = null;
                 if (cookies != null) {
@@ -34,9 +33,12 @@
                             break;
                         }
                     }
-                } else if (miContador == null) {
+                }
+
+                if (miContador == null) {
                     miContador = new Cookie("contador", "0");
-                } else if (request.getParameter("Eliminar") != null) {
+                }
+                if (request.getParameter("Eliminar") != null) {
                     miContador.setValue("0");
                 }
 

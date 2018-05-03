@@ -180,6 +180,7 @@ public class Registro extends HttpServlet {
             System.out.println("EL VALOR DE LOS CAMPOS CORRECTOS" + todoCorrecto);
             if (todoCorrecto == 6) {
                 out.println("<div class=\"columnasCentradas\">");
+                out.println("<h1> Datos introducidos</h1>");
                 for (Iterator<String> i = parametros.keySet().iterator(); i.hasNext();) {
                     String nombre = i.next();
                     if (!nombre.startsWith("enviar")) {

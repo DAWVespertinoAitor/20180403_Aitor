@@ -20,44 +20,55 @@
     </head>
     <body>
         <div class="columnasCentradas">
-        <%
-            LocalDate ahora = LocalDate.now();
-            String fecha = request.getParameter("fecha");
-            
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate fechaNac = LocalDate.parse(fecha, fmt);
-            
-            String edadExacta = " ";
-            
-            Map<String, String[]> parametros = request.getParameterMap();
-            for (Iterator<String> i = parametros.keySet().iterator(); i.hasNext();) {
-                String nombre = i.next();
-                
-                if (!nombre.startsWith("enviar")) {
-                    
-                     if(fechaNac.compareTo(ahora) < 0){
-                        Period periodo = Period.between(fechaNac, ahora);
-                        
-                        if(periodo.getYears()>0 && periodo.getMonths()>0 && periodo.getDays()>0){
-                            edadExacta = "<h1>Tu edad es de: </h1><h3>"+periodo.getYears()+" años "+ periodo.getMonths()+" meses y "+ periodo.getDays()+" días</h3>";
-                            
-                        } else if( periodo.getYears()==0 && periodo.getMonths()>0 && periodo.getDays()>0){
-                            edadExacta = "<h1>Tu edad es de: </h1><h3>"+ periodo.getMonths()+" meses y "+ periodo.getDays()+" días</h3>";
-                            
-                        } else if( periodo.getYears()==0 && periodo.getMonths()<=0 && periodo.getDays()>0){
-                            if(periodo.getDays()==1){
-                                edadExacta = "<h1>Tu edad es de: </h1><h3>"+ periodo.getDays()+" día</h3>";
-                            } else {
-                                edadExacta = "<h1>Tu edad es de: </h1><h3>"+ periodo.getDays()+" días</h3>";
-                            }
+            <%
+                LocalDate ahora = LocalDate.now();
+                String fecha = request.getParameter("fecha");
+
+                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate fechaNac = LocalDate.parse(fecha, fmt);
+
+                String edadExacta = " ";
+                String nombrePersona = "";
+
+                Map<String, String[]> parametros = request.getParameterMap();
+                for (Iterator<String> i = parametros.keySet().iterator(); i.hasNext();) {
+                    String nombre = i.next();
+
+                    if (!nombre.startsWith("enviar")) {
+                        switch (nombre) {
+                            case "nombre":
+                                nombrePersona = "<h1>Hola " + request.getParameter(nombre) + "</h1>";
+                                break;
+                            case "fecha":
+                                if (fechaNac.compareTo(ahora) < 0) {
+
+                                    Period periodo = Period.between(fechaNac, ahora);
+
+                                    if (periodo.getYears() > 0 && periodo.getMonths() > 0 && periodo.getDays() > 0) {
+                                        edadExacta = "<h1>Tu edad es de: </h1><h3>" + periodo.getYears() + " años " + periodo.getMonths() + " meses y " + periodo.getDays() + " días</h3>";
+                                    } else if (periodo.getYears() > 0 && periodo.getMonths() > 0 && periodo.getDays() == 0) {
+                                        edadExacta = "<h1>Tu edad es de: </h1><h3>" + periodo.getYears() + " años y " + periodo.getMonths() + " meses</h3>";
+                                    } else if (periodo.getYears() == 0 && periodo.getMonths() > 0 && periodo.getDays() > 0) {
+                                        edadExacta = "<h1>Tu edad es de: </h1><h3>" + periodo.getMonths() + " meses y " + periodo.getDays() + " días</h3>";
+                                    } else if (periodo.getYears() == 0 && periodo.getMonths() <= 0 && periodo.getDays() > 0) {
+                                        if (periodo.getDays() == 1) {
+                                            edadExacta = "<h1>Tu edad es de: </h1><h3>" + periodo.getDays() + " día</h3>";
+                                        } else {
+                                            edadExacta = "<h1>Tu edad es de: </h1><h3>" + periodo.getDays() + " días</h3>";
+                                        }
+                                    }
+                                } else {
+                                    edadExacta = edadExacta + "<h3>No has introducido una fecha de nacimiento</h3>";
+                                }
+                                break;
                         }
-                    } else {
-                        edadExacta = "<h3>No has introducido una fecha de nacimiento</h3>";
+
                     }
                 }
-            }
-        %>
-        <%=edadExacta%>
+            %>
+            <h1><%=nombrePersona%></h1>
+
+            <h3><%=edadExacta%></h3>
             <a href="../index.html">Menu principal</a>
         </div>
     </body>
